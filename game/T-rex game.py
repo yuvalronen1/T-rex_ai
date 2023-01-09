@@ -102,10 +102,11 @@ while playing:
     obs1 = (rnd(600, 600+500), 130)
     obs2 = (rnd(600+100+500, 1200+500), 130)
     obs3 = (rnd(1700, 2000), 130)
-    obast1 = choice(obstacles)
+    #obast1 = choice(obstacles)
+    obast1 = bird1
     if obast1 in [obstacle4, obstacle5, obstacle6]:obs1 = (obs1[0], 115)
     if obast1 is bird1:
-        obs1 = (obs1[0], choice([80, 60]))
+        obs1 = (obs1[0], choice([100, 120]))
         isbird1 = True
     else:
         isbird1 = False
@@ -143,9 +144,9 @@ while playing:
                     fast_fall = False
                     state = running
         player = state if type(state) != cycle else next(state)
-        # if isbird1: obast1 = next(flying)
-        # if isbird2: obast2 = next(flying)
-        # if isbird3: obast3 = next(flying)
+        if isbird1: obast1 = next(flying)
+        if isbird2: obast2 = next(flying)
+        if isbird3: obast3 = next(flying)
 
         gameDisplay.blit(pygame.image.fromstring(cloud.tobytes(), cloud.size, 'RGBA'), c1)
         gameDisplay.blit(pygame.image.fromstring(cloud.tobytes(), cloud.size, 'RGBA'), c2)
@@ -183,7 +184,6 @@ while playing:
             obast1 = choice(obstacles)
             if obast1 in [obstacle4, obstacle5, obstacle6]:obs1 = (obs1[0], 115)
             if obast1 is bird1:
-                print("oops")
                 obs1 = (obs1[0], choice([80, 60]))
                 isbird1 = True
             else:
@@ -193,7 +193,6 @@ while playing:
             obast2 = choice(obstacles)
             if obast2 in [obstacle4, obstacle5, obstacle6]:obs2 = (obs2[0], 115)
             if obast2 is bird1:
-                print("oops")
                 obs2 = (obs2[0], choice([80, 60]))
                 isbird2 = True
             else:
@@ -203,7 +202,6 @@ while playing:
             obast3 = choice(obstacles)
             if obast3 in [obstacle4, obstacle5, obstacle6]:obs3 = (obs3[0], 115)
             if obast3 is bird1:
-                print("oops")
                 obs3 = (obs3[0], choice([80, 60]))
                 isbird3 = True
             else:
@@ -218,8 +216,6 @@ while playing:
             obs1_cub = (obs1[0], obs1[1], obs1[0]+obast1.size[0],obs1[1]+obast1.size[1])
             obs2_cub = (obs2[0], obs2[1], obs2[0]+obast2.size[0],obs2[1]+obast2.size[1])
             obs3_cub = (obs3[0], obs3[1], obs3[0]+obast3.size[0],obs3[1]+obast3.size[1])
-            obs1 = (obs1[0]-speed, obs1[1])
-            obs1_cub = (obs1[0], obs1[1], obs1[0]+obast1.size[0],obs1[1]+obast1.size[1])
             if not lock:
                 bg = (bg[0]-speed, bg[1])
                 if bg[0]<=-(600):
