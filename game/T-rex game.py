@@ -62,10 +62,10 @@ obstacle5 = obstacle5.resize(list(map(lambda x:x//2 , obstacle5.size)))
 obstacle6 = Image.open(r"C:\Users\User\Desktop\T-rex_ai\game\resources.png").crop((851,2,950,101)).convert("RGBA")
 obstacle6 = obstacle6.resize(list(map(lambda x:x//2 , obstacle6.size)))
 
-bird1 = Image.open(r"C:\Users\User\Desktop\T-rex_ai\game\resources.png").crop((258,15,347,80)).convert("RGBA")
+bird1 = Image.open(r"C:\Users\User\Desktop\T-rex_ai\game\resources.png").crop((258,15,347,105)).convert("RGBA")
 bird1 = bird1.resize(list(map(lambda x:x//2 , bird1.size)))
 
-bird2 = Image.open(r"C:\Users\User\Desktop\T-rex_ai\game\resources.png").crop((355,2,440,50)).convert("RGBA")
+bird2 = Image.open(r"C:\Users\User\Desktop\T-rex_ai\game\resources.png").crop((355,2,440,55)).convert("RGBA")
 bird2 = bird2.resize(list(map(lambda x:x//2 , bird2.size)))
 
 
@@ -77,12 +77,15 @@ flying = cycle([bird1]*cust_speed + [bird1]*cust_speed + [bird2]*cust_speed + [b
 crouch_scope = [player_frame_5]+[player_frame_6]
 obstacles = [obstacle1,obstacle2, obstacle3,obstacle4,obstacle5,obstacle6, bird1]
 isbird1 = False
-isbird2 = False
 isbird3 = False
+
+score = 0
 
 playing = True
 gameDisplay = pygame.display.set_mode((600,200))
 while playing:
+    print(score)
+    score = 0
     speed = 2
     pygame.display.set_caption('T-Rex Runner')
     clock = pygame.time.Clock()
@@ -100,7 +103,6 @@ while playing:
     c3 = (rnd(30,700), rnd(0, 100))
     c4 = (rnd(30,600),rnd(0, 100))
     obs1 = (rnd(600, 600+500), 130)
-    obs2 = (rnd(600+100+500, 1200+500), 130)
     obs3 = (rnd(1700, 2000), 130)
     #obast1 = choice(obstacles)
     obast1 = bird1
@@ -110,13 +112,6 @@ while playing:
         isbird1 = True
     else:
         isbird1 = False
-    obast2 = choice(obstacles)
-    if obast2 in [obstacle4, obstacle5, obstacle6]:obs2 = (obs2[0], 115)
-    if obast2 is bird1:
-        obs2 = (obs2[0], choice([80, 60]))
-        isbird2 = True
-    else:
-        isbird2 = False
     obast3 = choice(obstacles)
     if obast3 in [obstacle4, obstacle5, obstacle6]:obs3 = (obs3[0], 115)
     if obast3 is bird1:
@@ -126,6 +121,7 @@ while playing:
         isbird3 = False
 
     while not crashed:
+        score = 0.001
         speed += 0.001
         gameDisplay.fill((255,255,255))
         for event in pygame.event.get():
@@ -145,7 +141,6 @@ while playing:
                     state = running
         player = state if type(state) != cycle else next(state)
         if isbird1: obast1 = next(flying)
-        if isbird2: obast2 = next(flying)
         if isbird3: obast3 = next(flying)
 
         gameDisplay.blit(pygame.image.fromstring(cloud.tobytes(), cloud.size, 'RGBA'), c1)
@@ -177,7 +172,6 @@ while playing:
             else: height += jump(height)
         player = gameDisplay.blit(pygame.image.fromstring(player.tobytes(), player.size, 'RGBA'), (5,height))
         gameDisplay.blit(pygame.image.fromstring(obast1.tobytes(), obast1.size, 'RGBA'), obs1)
-        gameDisplay.blit(pygame.image.fromstring(obast2.tobytes(), obast2.size, 'RGBA'), obs2)
         gameDisplay.blit(pygame.image.fromstring(obast3.tobytes(), obast3.size, 'RGBA'), obs3)
         if obs1[0]<=-50:
             obs1 = (rnd(600, 600+500), 130)
@@ -188,15 +182,6 @@ while playing:
                 isbird1 = True
             else:
                 isbird1 = False
-        if obs2[0]<=-50:
-            obs2 = (rnd(600+100+500, 1200+500), 130)
-            obast2 = choice(obstacles)
-            if obast2 in [obstacle4, obstacle5, obstacle6]:obs2 = (obs2[0], 115)
-            if obast2 is bird1:
-                obs2 = (obs2[0], choice([80, 60]))
-                isbird2 = True
-            else:
-                isbird2 = False
         if obs3[0]<=-50:
             obs3 = (rnd(1700, 2000), 130) 
             obast3 = choice(obstacles)
@@ -211,10 +196,8 @@ while playing:
             start=True
         if start:
             obs1 = (obs1[0]-speed, obs1[1])
-            obs2 = (obs2[0]-speed, obs2[1])
             obs3 = (obs3[0]-speed, obs3[1])
             obs1_cub = (obs1[0], obs1[1], obs1[0]+obast1.size[0],obs1[1]+obast1.size[1])
-            obs2_cub = (obs2[0], obs2[1], obs2[0]+obast2.size[0],obs2[1]+obast2.size[1])
             obs3_cub = (obs3[0], obs3[1], obs3[0]+obast3.size[0],obs3[1]+obast3.size[1])
             if not lock:
                 bg = (bg[0]-speed, bg[1])
@@ -230,10 +213,6 @@ while playing:
                 if -bg[0]>=600:bg1 = (600,150)
 
             if obs1_cub[0]<=player_stading_cub[2]-10<=obs1_cub[2] and obs1_cub[1]<=player_stading_cub[3]-10<=obs1_cub[3]-5:
-                crashed = True
-                speed = 2
-                state = player_frame_4
-            if obs2_cub[0]<=player_stading_cub[2]-10<=obs2_cub[2] and obs2_cub[1]<=player_stading_cub[3]-10<=obs2_cub[3]-5:
                 crashed = True
                 speed = 2
                 state = player_frame_4
