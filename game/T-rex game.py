@@ -3,7 +3,6 @@ from itertools import cycle
 from random import choice
 from PIL import  Image
 import pygame
-import time
 import math
 
 def jump(x):
@@ -15,20 +14,11 @@ speed = 2
 
 
 # extracting game items and characters form the resource.png image.
-player_init = Image.open(r"D:\Users\User\Documents\T-rex_ai\game\resources.png").crop((77,5,163,96)).convert("RGBA")
-player_init = player_init.resize(list(map(lambda x:x//2 , player_init.size)))
-
-player_frame_1 = Image.open(r"D:\Users\User\Documents\T-rex_ai\game\resources.png").crop((1679,2,1765,95)).convert("RGBA")
+player_frame_1 = Image.open(r"D:\Users\User\Documents\T-rex_ai\game\resources.png").crop((1855,2,1941,95)).convert("RGBA")
 player_frame_1 = player_frame_1.resize(list(map(lambda x:x//2 , player_frame_1.size)))
 
-player_frame_2 = Image.open(r"D:\Users\User\Documents\T-rex_ai\game\resources.png").crop((1767,2,1853,95)).convert("RGBA")
+player_frame_2 = Image.open(r"D:\Users\User\Documents\T-rex_ai\game\resources.png").crop((1943,2,2029,95)).convert("RGBA")
 player_frame_2 = player_frame_2.resize(list(map(lambda x:x//2 , player_frame_2.size)))
-
-player_frame_3 = Image.open(r"D:\Users\User\Documents\T-rex_ai\game\resources.png").crop((1855,2,1941,95)).convert("RGBA")
-player_frame_3 = player_frame_3.resize(list(map(lambda x:x//2 , player_frame_3.size)))
-
-player_frame_31 = Image.open(r"D:\Users\User\Documents\T-rex_ai\game\resources.png").crop((1943,2,2029,95)).convert("RGBA")
-player_frame_31 = player_frame_31.resize(list(map(lambda x:x//2 , player_frame_31.size)))
 
 player_frame_4 = Image.open(r"D:\Users\User\Documents\T-rex_ai\game\resources.png").crop((2030,2,2117,95)).convert("RGBA")
 player_frame_4 = player_frame_4.resize(list(map(lambda x:x//2 , player_frame_4.size)))
@@ -112,10 +102,9 @@ def showScore(score):
 
 speed_identifier = lambda x: 2 if x >= 30 else 8 if x < 8 else 5
 cust_speed = speed_identifier(speed)
-running = cycle([player_frame_3]*cust_speed+[player_frame_31]*cust_speed)
+running = cycle([player_frame_1]*cust_speed+[player_frame_2]*cust_speed)
 crouch = cycle([player_frame_5]*cust_speed+ [player_frame_6]*cust_speed)
 flying = cycle([bird1]*cust_speed + [bird1]*cust_speed + [bird2]*cust_speed + [bird2]*cust_speed)
-crouch_scope = [player_frame_5]+[player_frame_6]
 obstacles = [obstacle1,obstacle2, obstacle3,obstacle4,obstacle5,obstacle6, bird1]
 isbird1 = False
 isbird3 = False
