@@ -101,6 +101,9 @@ def showScore(score):
 
 
 speed_identifier = lambda x: 2 if x >= 30 else 8 if x < 8 else 5
+# x >= 30 --> 2
+# 8 <= x < 30 --> 5
+# x < 8 --> 8
 cust_speed = speed_identifier(speed)
 running = cycle([player_frame_1]*cust_speed+[player_frame_2]*cust_speed)
 crouch = cycle([player_frame_5]*cust_speed+ [player_frame_6]*cust_speed)
@@ -111,11 +114,10 @@ isbird3 = False
 
 playing = True
 gameDisplay = pygame.display.set_mode((600,200))
+pygame.display.set_caption('T-Rex Runner')
 while playing:
     score = 1
     speed = 2
-    pygame.display.set_caption('T-Rex Runner')
-    clock = pygame.time.Clock()
     state = running
     crashed = False
     lock = False
@@ -147,22 +149,23 @@ while playing:
         isbird3 = False
 
     while not crashed:
-        score += 0.1
-        speed += 0.001
+        score += 0.1 #logic
+        speed += 0.001 #logic
         gameDisplay.fill((255,255,255))
+        clock = pygame.time.Clock()
         showScore(math.floor(score))
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT: #main
                 crashed = True
                 playing = False
-            if event.type==pygame.KEYDOWN:
+            if event.type==pygame.KEYDOWN: #main
                 start = True
-                if event.key == pygame.K_DOWN:
+                if event.key == pygame.K_DOWN: #main
                     fast_fall = True
                     state = crouch
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_UP: #main
                     if height >= 110:jumping = True
-            if event.type==pygame.KEYUP:
+            if event.type==pygame.KEYUP: #main
                 if event.key == pygame.K_DOWN:
                     fast_fall = False
                     state = running
