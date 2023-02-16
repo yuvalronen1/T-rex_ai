@@ -175,38 +175,51 @@ class Graphics():
         self.gameDisplay.blit(pygame.image.fromstring(frame.tobytes(), frame.size, 'RGBA'), (p.POSITION, p.height))
 
 
-####################################################################################
+###################################################################################################################################
 
-l = logic.Logic(2)
-game = Graphics((600,200))
+while True:
+    
+    l = logic.Logic(2)
+    game = Graphics((600,200))
 
-p = logic.Player()
+    p = logic.Player()
 
-playing = True
-ob = logic.Obstacle()
-while playing:
-    # adjust speed and score
-    l.updateSpeedScore()
-    # 
-    game.updateBackground(l.speed)
+    ob = logic.Obstacle()
 
-    # check input
-    for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                playing = False
 
-    # show player
-    game.showPlayer(p)
+    while not p.isCrashed(ob):
+        # adjust speed and score
+        l.updateSpeedScore()
+        # 
+        game.updateBackground(l.speed)
 
-    # move and show Obstacle
-    ob.move(l.speed)
-    game.showObsitcle(ob)
+        # check input
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type==pygame.KEYDOWN:
+                    if event.key == pygame.K_DOWN:
+                        l.downKey(p)
+                    if event.key == pygame.K_UP:
+                        l.upKey(p)
+                if event.type==pygame.KEYUP:
+                    if event.key == pygame.K_DOWN:
+                        l.keyUp(p)
 
-    if ob.pos[0] <= -50:
-        ob = logic.Obstacle()
+        l.jump(p)
 
-    # show score
-    game.showScore(l.score)
+        # show player
+        game.showPlayer(p)
 
-    pygame.display.update()
-    game.clock.tick(120)
+        # move and show Obstacle
+        ob.move(l.speed)
+        game.showObsitcle(ob)
+
+        if ob.pos[0] <= -50:
+            ob = logic.Obstacle()
+
+        # show score
+        game.showScore(l.score)
+
+        pygame.display.update()
+        game.clock.tick(120)
