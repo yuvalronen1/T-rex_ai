@@ -5,7 +5,7 @@ obstacles = ["o1", "o2", "o3", "o4", "o5", "o6", "b"]
 
 obstacle_sizes = {"o1" : (16, 34), "o2" : (50, 34), "o3" : (67, 34), "o4" : (24, 49), "o5" : (48, 49), "o6" : (49, 49), "b" : (44, 45)}
 
-def jump(x):
+def jump_motion(x):
     return x/15
 
 class Logic():
@@ -32,16 +32,16 @@ class Logic():
         player.fast_fall = False
         player.state = 'r'
     
-    def jump(self, player):
+    def update_height(self, player):
         if player.jumping:
             if player.height >= 110 - 100:
-                player.height -= jump(player.height)
+                player.height -= jump_motion(player.height)
             if player.height <= 110-100:
                 player.jumping = False
         if player.height<110 and not player.jumping:
             if player.fast_fall:
                 player.height += 7
-            else: player.height += jump(player.height)
+            else: player.height += jump_motion(player.height)
 
 class Obstacle():
     def __init__(self):
