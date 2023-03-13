@@ -2,8 +2,10 @@ from PIL import  Image
 import pygame
 import math
 from itertools import cycle
-from random import randrange as rnd
+import random
 import logic
+from sys import maxsize
+import os
 
 
 # extracting game items and characters form the resource.png image.
@@ -104,10 +106,10 @@ class Graphics():
             pygame.display.set_caption('T-Rex Runner')
 
             # create background
-            self.c1 = (rnd(30, 600), rnd(0, 100))
-            self.c2 = (rnd(50,600), rnd(0, 100))
-            self.c3 = (rnd(30,700), rnd(0, 100))
-            self.c4 = (rnd(30,600),rnd(0, 100))
+            self.c1 = (random.randrange(30, 600), random.randrange(0, 100))
+            self.c2 = (random.randrange(50,600), random.randrange(0, 100))
+            self.c3 = (random.randrange(30,700), random.randrange(0, 100))
+            self.c4 = (random.randrange(30,600),random.randrange(0, 100))
             self.lock = False
             self.bg = (0, 150)
             self.bg1 = (600,150)
@@ -177,15 +179,16 @@ class Graphics():
 
 
 ###################################################################################################################
-def play(ai_active: bool, display: bool):
+
+def play(ai_active: bool, display: bool, seed: int, b):
     while True:
-        
+        random.seed(seed)
         l = logic.Logic(2)
         game = Graphics((600,200), display)
 
         p = logic.Player()
 
-        ob = logic.Obstacle()
+        ob = logic.Obstacle(random.randrange(maxsize))
 
         while not p.isCrashed(ob):
             # adjust speed and score
@@ -194,7 +197,7 @@ def play(ai_active: bool, display: bool):
             if display:
                 game.updateBackground(l.speed)
             if ai_active:
-                choice = yield p.height, ob.pos[0], ob.pos[1], int(ob.sort[1]) if len(ob.sort) == 2 else 7, l.speed
+                choice = yield p.height, ob.pos[0], ob.pos[1], 0 if len(ob.sort) == 2 else 1, l.speed
                 if choice == 2:
                     l.downKey(p)
                 else:
@@ -227,18 +230,18 @@ def play(ai_active: bool, display: bool):
                 game.showObsitcle(ob)
 
             if ob.pos[0] <= -50:
-                ob = logic.Obstacle()
+                ob = logic.Obstacle(random.randrange(maxsize))
 
             # show score
             if display:
                 game.showScore(l.score)
                 pygame.display.update()
             
-            if not ai_active:
+            if display:
                 game.clock.tick(120)
-
-        if ai_active:
-            yield "done"
+        if b:
+            yield l.score
+            break
             
 
 #########################################################################################
@@ -246,17 +249,25 @@ import neat
 import numpy as np
 
 def eval_genomes(genomes, config):
-    for genome_id, genome in genomes:
+    seeds = [int.from_bytes(os.urandom(8), byteorder="big"), int.from_bytes(os.urandom(8), byteorder="big")]
+    for _, genome in genomes:
         net = neat.nn.FeedForwardNetwork.create(genome, config)
-        run = play(True, True)
-        net_input = run.send(None)
-        while type(net_input) == tuple:
-            net_output = net.activate(net_input)
-            softmax_result = neat.math_util.softmax(net_output)
-            output = np.argmax(np.argmax((softmax_result / np.max(softmax_result)) == 1).astype(int))
-            net_input = run.send(output)
         
-        genome.fitness = net_input
+        fitness = []
+        
+        for seed in seeds:
+            run = play(True, False, seed, True)
+            net_input = run.send(None)
+            
+            while type(net_input) == tuple:
+                net_output = net.activate(net_input)
+                softmax_result = neat.math_util.softmax(net_output)
+                output = np.uint32(np.argmax((softmax_result / np.max(softmax_result)) == 1)).item()
+                net_input = run.send(output)
+            
+            fitness.append(net_input)
+        
+        genome.fitness = sum(fitness) / 2
 
 def run(config_file):
     # Load configuration.
@@ -265,7 +276,8 @@ def run(config_file):
                          config_file)
 
     # Create the population, which is the top-level object for a NEAT run.
-    p = neat.Population(config)
+    # p = neat.Population(config)
+    p = neat.Checkpointer.restore_checkpoint("neat-checkpoint-189")
 
     # Add a stdout reporter to show progress in the terminal.
     p.add_reporter(neat.StdOutReporter(True))
@@ -274,12 +286,21 @@ def run(config_file):
     p.add_reporter(neat.Checkpointer(5))
 
     # Run for up to 300 generations.
-    winner = p.run(eval_genomes, 300)
+    # winner = p.run(eval_genomes, 300)
 
+    winner = p.run(eval_genomes, 1)
+    
     # Display the winning genome.
     print('\nBest genome:\n{!s}'.format(winner))
-
-    p = neat.Checkpointer.restore_checkpoint('neat-checkpoint-4')
-    p.run(eval_genomes, 10)
     
+    net = neat.nn.FeedForwardNetwork.create(winner, config)
+    
+    iplay = play(True, True, int.from_bytes(os.urandom(8), byteorder="big"), False)
+    while True:
+        net_input = iplay.send(None)
+        net_output = net.activate(net_input)
+        softmax_result = neat.math_util.softmax(net_output)
+        output = np.uint32(np.argmax((softmax_result / np.max(softmax_result)) == 1)).item()
+        net_input = iplay.send(output)
+
 run(r"game\config-feedforward")

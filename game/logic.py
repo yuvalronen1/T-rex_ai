@@ -1,5 +1,4 @@
-from random import choice
-from random import randrange as rnd
+import random
 
 obstacles = ["o1", "o2", "o3", "o4", "o5", "o6", "b"]
 
@@ -44,12 +43,13 @@ class Logic():
             else: player.height += jump_motion(player.height)
 
 class Obstacle():
-    def __init__(self):
-        self.pos = (rnd(600, 600+500), 130)
-        self.sort = choice(obstacles)
+    def __init__(self, seed):
+        
+        self.pos = (random.randrange(600, 600+500), 130)
+        self.sort = random.choice(obstacles)
         if self.sort in  ["o4", "o5", "o6"]: self.pos = (self.pos[0], 115)
         if self.sort == "b":
-            self.pos = (self.pos[0], choice([80, 60]))
+            self.pos = (self.pos[0], random.choice([80, 60]))
             self.isbird = True
         else: self.isbird = False
     
