@@ -49,7 +49,7 @@ class Obstacle():
         self.sort = random.choice(obstacles)
         if self.sort in  ["o4", "o5", "o6"]: self.pos = (self.pos[0], 115)
         if self.sort == "b":
-            self.pos = (self.pos[0], random.choice([80, 60]))
+            self.pos = (self.pos[0], random.choice([85, 50]))
             self.isbird = True
         else: self.isbird = False
     

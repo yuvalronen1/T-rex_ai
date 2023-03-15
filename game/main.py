@@ -180,7 +180,7 @@ class Graphics():
 
 ###################################################################################################################
 
-def play(ai_active: bool, display: bool, seed: int, b):
+def play(ai_active: bool, display: bool, seed = int.from_bytes(os.urandom(8), byteorder="big"), b = False):
     while True:
         random.seed(seed)
         l = logic.Logic(2)
@@ -276,8 +276,8 @@ def run(config_file):
                          config_file)
 
     # Create the population, which is the top-level object for a NEAT run.
-    # p = neat.Population(config)
-    p = neat.Checkpointer.restore_checkpoint("neat-checkpoint-189")
+    p = neat.Population(config)
+    # p = neat.Checkpointer.restore_checkpoint("neat-checkpoint-189-run6")
 
     # Add a stdout reporter to show progress in the terminal.
     p.add_reporter(neat.StdOutReporter(True))
@@ -286,16 +286,14 @@ def run(config_file):
     p.add_reporter(neat.Checkpointer(5))
 
     # Run for up to 300 generations.
-    # winner = p.run(eval_genomes, 300)
-
-    winner = p.run(eval_genomes, 1)
+    winner = p.run(eval_genomes, 300)
     
     # Display the winning genome.
     print('\nBest genome:\n{!s}'.format(winner))
     
     net = neat.nn.FeedForwardNetwork.create(winner, config)
     
-    iplay = play(True, True, int.from_bytes(os.urandom(8), byteorder="big"), False)
+    iplay = play(True, True)
     while True:
         net_input = iplay.send(None)
         net_output = net.activate(net_input)
@@ -304,3 +302,5 @@ def run(config_file):
         net_input = iplay.send(output)
 
 run(r"game\config-feedforward")
+
+play(False, True).send(None)
